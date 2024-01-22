@@ -18,44 +18,58 @@ describe('Demozable.com', function() {
       // Visita la página 
     cy.visit('https://www.demoblaze.com/index.html')
     cy.get('#signin2').should('be.visible').click()
-
-    // Esperar, encontrar y escribir en el campo de nombre de usuario
     cy.get('#sign-username').should('be.visible').type('moisecas32')
-
-    // Esperar, encontrar y escribir en el campo de contraseña
     cy.get('#sign-password').should('be.visible').type('tuContraseña')
-
-    // Hacer clic en el botón para crear la cuenta (ajusta el selector según sea necesario)
     cy.get('#signInModal > .modal-dialog > .modal-content > .modal-footer > .btn-primary').click()    
     
     cy.on('window:alert', (alertText) => {
         expect(alertText).to.contains('Please fill out Username and Password.');
-    });
+    }); //validación de ventana alert usuario existe
         
     })
 
-    it.only('usuario y password correcto en login', function() {
+    it('usuario y password correcto en login', function() {
         cy.visit('https://www.demoblaze.com/index.html')
         cy.get('#login2').click()
-        cy.get('#loginusername').type('moisecas32') 
-        cy.get('#loginpassword').type(123456) 
+        cy.get('#loginusername').click()
+        cy.wait(10000); // Espera durante 10 segundos
+        cy.get('#loginusername').should('be.visible').type('moisecas32', { delay: 2000 })
+        cy.get('#loginpassword').should('be.visible').type('123456', { delay: 150 })
         cy.get('#logInModal > .modal-dialog > .modal-content > .modal-footer > .btn-primary').click()
-        
-            
+        cy.get('#nameofuser').should('have.value', 'moisecas32');         
     })
+    
+    
+    
+
     it('usuario incorrecto en login', function() {
         cy.visit('https://www.demoblaze.com/index.html')
         cy.get('#login2').click()
-        cy.get('#loginusername').type('moisecas3')    //el usuario correcto es moisecas32                  
-            
+        cy.get('#loginusername').type('moisecas3') // el usuario correcto es moisecas32
+        cy.get('#loginpassword').should('be.visible').type('123456', { delay: 150 })
+        cy.get('#logInModal > .modal-dialog > .modal-content > .modal-footer > .btn-primary').click()
+    
+        // Escucha el evento 'window:alert' para capturar el mensaje del alert
+        cy.on('window:alert', (message) => {
+            // Verifica que el mensaje del alert sea el esperado
+            expect(message).to.equal('Sign up successful.'); 
+        });
     })
+    
+    
 
-    it('password incorrecto en login', function() {
+    it.only('password incorrecto en login', function() {
         cy.visit('https://www.demoblaze.com/index.html')
         cy.get('#login2').click()
-        cy.get('#loginusername').type('moisecas32') 
-        cy.get('#loginpassword').type(12345) //el password correcto es 123456 
-        cy.get('#logInModal > .modal-dialog > .modal-content > .modal-footer > .btn-primary').click()                     
+        cy.get('#loginusername').should('be.visible').type('moisecas32', { delay: 2000 })
+        cy.get('#loginpassword').should('be.visible').type('12345', { delay: 150 })
+        cy.get('#logInModal > .modal-dialog > .modal-content > .modal-footer > .btn-primary').click()
+    
+        // Escucha el evento 'window:alert' para capturar el mensaje del alert
+        cy.on('window:alert', (message) => {
+            // Verifica que el mensaje del alert sea el esperado
+            expect(message).to.equal('Sign up successful.'); 
+        });                     
             
     })
     
